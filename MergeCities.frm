@@ -15,11 +15,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
 Private Sub CancelBtn_Click()
-    MergeCities.Hide
+    Unload Me
 End Sub
 
 Private Sub CitiesListBox_Click()
-SubmitBtn.Enabled = True
+    SubmitBtn.Enabled = True
 End Sub
 
 Private Function SelectedValue() As String
@@ -57,16 +57,18 @@ Private Sub Merge(value As String)
     FirstRow = True
     For Each r In Selection.Rows
         If FirstRow Then
-            'Do nothing
+            FirstRow = False
         Else
             r.Delete
         End If
     Next r
+    
+    
 End Sub
 
 Private Sub SubmitBtn_Click()
     Merge (SelectedValue())
-    MergeCities.Hide
+    Unload Me
 End Sub
 
 Private Sub UserForm_Click()
