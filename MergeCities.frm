@@ -14,6 +14,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
+
+
 Private Sub CancelBtn_Click()
     Unload Me
 End Sub
@@ -25,7 +27,7 @@ End Sub
 Private Function SelectedValue() As String
     For i = 0 To CitiesListBox.ListCount - 1
         If CitiesListBox.Selected(i) = True Then
-            SelectedValue = CitiesListBox.List(i)
+            SelectedValue = CitiesListBox.list(i)
             Exit Function
         End If
     Next i
@@ -39,30 +41,40 @@ Private Sub Merge(value As String)
         FirstRow = True
         
     For FRCol = 2 To Selection.Rows(1).Columns.Count
-        For Each r In Selection.Rows
+        For Each R In Selection.Rows
             Dim FirstCol As Boolean
             FirstCol = True
             
             If FirstRow Then
                 FirstRow = False
             Else
-                Selection.Rows(1).Columns(FRCol) = Selection.Rows(1).Columns(FRCol) + r.Columns(FRCol)
+                Selection.Rows(1).Columns(FRCol) = Selection.Rows(1).Columns(FRCol) + R.Columns(FRCol)
             End If
             
             FirstCol = True
-        Next r
+        Next R
+        FirstRow = True
     Next FRCol
     
-    'Delete other rows
-    FirstRow = True
-    For Each r In Selection.Rows
-        If FirstRow Then
-            FirstRow = False
-        Else
-            r.Delete
-        End If
-    Next r
+    Dim rUnselect As Range
+    Dim rCell As Range
+    Dim rNew As Range
     
+    Set rUnselect = Selection.Rows(1)
+    
+    For Each rCell In Selection
+        If Intersect(rUnselect, rCell) Is Nothing Then
+            If rNew Is Nothing Then
+                Set rNew = rCell
+            Else
+                Set rNew = Union(rNew, rCell)
+            End If
+        End If
+    Next
+    
+    rNew.Delete
+    'Selection.Offset(1, 0).Resize(Selection.Rows.Count - 1, Selection.Columns.Count).Select
+    'Selection.Remove
     
 End Sub
 
@@ -76,9 +88,9 @@ Private Sub UserForm_Click()
 End Sub
 
 Private Sub UserForm_Initialize()
-    For Each r In Selection.Rows
+    For Each R In Selection.Rows
         With CitiesListBox
-            .AddItem r.Columns(1)
+            .AddItem R.Columns(1)
         End With
     Next
 End Sub
